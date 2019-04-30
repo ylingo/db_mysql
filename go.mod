@@ -1,4 +1,4 @@
-module db_mysql
+module github.com/ylingo/db_mysql
 
 go 1.12
 
