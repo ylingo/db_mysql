@@ -1,4 +1,4 @@
-module mysql
+module db_mysql
 
 go 1.12
 
