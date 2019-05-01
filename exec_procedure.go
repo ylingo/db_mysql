@@ -8,33 +8,34 @@ import (
 
 func QueryByPage(dest interface{},
 	table, fields, where, join, orderby string,
-	pageSize, pageIndex int) (totalcount, pagecount int, err error) {
+	pageSize, pageIndex int) (totalcount, pagecount, outPageIndex int, err error) {
 
 	//先暂时使用这个拙劣的处理方式，后面需要研究一个优雅的方式来处理。
 	return QueryWithFoundRows(dest, table, fields, where, join, orderby, pageSize, pageIndex)
 
-	defer checkerr()
+	// defer checkerr()
 
-	params := []PROCEDURE_PARAM{}
-	var totalcount_p int = 0
-	var pagecount_p int = 0
-	params = append(params, PROCEDURE_PARAM{Name: "_fields", Direct: "in", Value: fields})
-	params = append(params, PROCEDURE_PARAM{Name: "_table", Direct: "in", Value: table})
-	params = append(params, PROCEDURE_PARAM{Name: "_where", Direct: "in", Value: where})
-	params = append(params, PROCEDURE_PARAM{Name: "_join", Direct: "in", Value: join})
-	params = append(params, PROCEDURE_PARAM{Name: "_orderby", Direct: "in", Value: orderby})
-	params = append(params, PROCEDURE_PARAM{Name: "_pageIndex", Direct: "in", Value: pageIndex})
-	params = append(params, PROCEDURE_PARAM{Name: "_pageSize", Direct: "in", Value: pageSize})
-	params = append(params, PROCEDURE_PARAM{Name: "_totalcount", Direct: "out", Value: 0, ParamPoint: &totalcount_p})
-	params = append(params, PROCEDURE_PARAM{Name: "_pagecount", Direct: "out", Value: 0, ParamPoint: &pagecount_p})
+	// params := []PROCEDURE_PARAM{}
+	// var totalcount_p int = 0
+	// var pagecount_p int = 0
+	// params = append(params, PROCEDURE_PARAM{Name: "_fields", Direct: "in", Value: fields})
+	// params = append(params, PROCEDURE_PARAM{Name: "_table", Direct: "in", Value: table})
+	// params = append(params, PROCEDURE_PARAM{Name: "_where", Direct: "in", Value: where})
+	// params = append(params, PROCEDURE_PARAM{Name: "_join", Direct: "in", Value: join})
+	// params = append(params, PROCEDURE_PARAM{Name: "_orderby", Direct: "in", Value: orderby})
+	// params = append(params, PROCEDURE_PARAM{Name: "_pageIndex", Direct: "in", Value: pageIndex})
+	// params = append(params, PROCEDURE_PARAM{Name: "_pageSize", Direct: "in", Value: pageSize})
+	// params = append(params, PROCEDURE_PARAM{Name: "_totalcount", Direct: "out", Value: 0, ParamPoint: &totalcount_p})
+	// params = append(params, PROCEDURE_PARAM{Name: "_pagecount", Direct: "out", Value: 0, ParamPoint: &pagecount_p})
 
-	err = ExecProcedureQuery(dest, "sp_page", params...)
-	if err != nil {
-		return 0, 0, err
-	}
-	totalcount = totalcount_p
-	pagecount = pagecount_p
-	return totalcount, pagecount, nil
+	// err = ExecProcedureQuery(dest, "sp_page", params...)
+	// if err != nil {
+	// 	return 0, 0, err
+	// }
+	// totalcount = totalcount_p
+	// pagecount = pagecount_p
+	// outPageIndex = pageIndex
+	// return totalcount, pagecount,outPageIndex, nil
 }
 
 type PROCEDURE_PARAM struct {
