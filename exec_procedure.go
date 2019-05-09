@@ -26,7 +26,7 @@ func QueryByPage(dest interface{},
 	_sb.WriteString(fmt.Sprintf("@totalcount,@pagecount"))
 	_sb.WriteString(")")
 	fmt.Println(_sb.String())
-	err = database.Select(dest, _sb.String())
+	err = ExecQuery(dest, _sb.String())
 	if err != nil {
 		return 0, 0, 0, err
 	}
