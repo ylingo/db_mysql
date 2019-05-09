@@ -25,6 +25,27 @@ func ExecNoQuery(strStmt string, args ...interface{}) error {
 	//	return nil
 }
 
+func ExecBatchNoQuery(strStmts []string) error {
+	if len(strStmts) == 0 {
+		return nil
+	}
+	tx, err := database.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	for i := range strStmts {
+		stmt, err := tx.Prepare(strStmts[i])
+		if err != nil {
+			return err
+		}
+		stmt.Exec()
+		stmt.Close()
+	}
+	tx.Commit()
+	return nil
+}
+
 func ExecInsertGetLastId(strStmt string, args ...interface{}) (int64, error) {
 	sqlStmt, err := database.Prepare(strStmt)
 	defer checkerr()
