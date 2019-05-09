@@ -47,12 +47,7 @@ func _Test_ExecNoQuery(t *testing.T) {
 // }
 
 type Product struct {
-	C1  int    `db:"c1"`
-	C2  string `db:"c2"`
-	C3  string `db:"c3"`
-	C4  string `db:"c4"`
-	C33 string `db:"c33"`
-	C44 string `db:"c44"`
+	seqId
 }
 
 // func Test_ExecQuery(t *testing.T) {
@@ -70,12 +65,23 @@ type Product struct {
 // 	}
 // }
 
-func _TestQueryByPage(t *testing.T) {
+func TestQueryByPage(t *testing.T) {
 	Init()
 	dest := []Product{}
-	totalcount, totalpage, outpageindex, err := QueryByPage(&dest, "tbl1 as t", "t.c1,t.c2,t.c3,t.c4,t2.c33,t2.c44", "",
-		"left join tbl2 as t2 on t.c1=t2.c11",
-		"", 100, 1)
+	tblName := "t_admin_user as t"
+	fields := `t.seqid,
+	    coalesce(t.userId,'') as userid,
+		coalesce(t.userName,'') as username,
+		'' as password,
+		coalesce(t.mobileNum,'''') as mobilenum,
+		coalesce(t.onOff,false) as onoff`
+
+	join := ""
+	where := ""
+	orderby := ""
+	totalcount, totalpage, outpageindex, err := QueryByPage(&dest, tblName, fields, where,
+		join,
+		orderby, 100, 1)
 	if err != nil {
 		t.Error("totalcount", totalcount, "totalpage:", totalpage, "err:", err)
 	} else {
@@ -87,7 +93,7 @@ func _TestQueryByPage(t *testing.T) {
 	}
 }
 
-func TestBatchExecNoQuery(t *testing.T) {
+func _TestBatchExecNoQuery(t *testing.T) {
 	Init()
 	var strSqls []string
 	strSqls = append(strSqls, "insert into tbl1(c1,c2,c3) values('a','b','c')")

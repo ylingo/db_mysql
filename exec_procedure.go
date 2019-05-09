@@ -16,22 +16,33 @@ func QueryByPage(dest interface{},
 	}
 	var _sb bytes.Buffer
 	_sb.WriteString("call sp_page(")
-	_sb.WriteString(fmt.Sprintf("'%s',", fields))
-	_sb.WriteString(fmt.Sprintf("'%s',", table))
-	_sb.WriteString(fmt.Sprintf("'%s',", join))
-	_sb.WriteString(fmt.Sprintf("'%s',", where))
-	_sb.WriteString(fmt.Sprintf("'%s',", orderby))
+	_sb.WriteString(fmt.Sprintf("\"%s\",", fields))
+	_sb.WriteString(fmt.Sprintf("\"%s\",", table))
+	_sb.WriteString(fmt.Sprintf("\"%s\",", join))
+	_sb.WriteString(fmt.Sprintf("\"%s\",", where))
+	_sb.WriteString(fmt.Sprintf("\"%s\",", orderby))
 	_sb.WriteString(fmt.Sprintf("%d,", pageIndex))
 	_sb.WriteString(fmt.Sprintf("%d,", pageSize))
 	_sb.WriteString(fmt.Sprintf("@totalcount,@pagecount"))
 	_sb.WriteString(")")
-	fmt.Println(_sb.String())
-	err = ExecQuery(dest, _sb.String())
+	//fmt.Println(_sb.String())
+	// err = database.Select(dest, _sb.String())
+	// if err != nil {
+	// 	return 0, 0, 0, err
+	// }
+
+	rows, err := database.Query(_sb.String())
+	defer rows.Close()
 	if err != nil {
 		return 0, 0, 0, err
+	} else {
+		if err := rows.Scan(dest); err != nil {
+			return 0, 0, 0, err
+		}
 	}
-	rows := database.QueryRow("SELECT @totalcount as totalcount,@pagecount as pagecount")
-	if err = rows.Scan(&totalcount, &pagecount); err == nil {
+
+	row := database.QueryRow("SELECT @totalcount as totalcount,@pagecount as pagecount")
+	if err = row.Scan(&totalcount, &pagecount); err == nil {
 		outPageIndex = pageIndex
 		if pageIndex > pagecount {
 			pageIndex = pagecount

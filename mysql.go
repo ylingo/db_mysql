@@ -8,9 +8,10 @@ import (
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
+	//"github.com/jmoiron/sqlx"
 )
 
-//"github.com/jmoiron/sqlx"
+//
 
 var once sync.Once
 var database *sql.DB
