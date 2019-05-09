@@ -1,20 +1,20 @@
 package db_mysql
 
 import (
-	"database/sql"
+	//"database/sql"
 	"fmt"
 	"strings"
 	"sync"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
-	//"github.com/jmoiron/sqlx"
+	"github.com/jmoiron/sqlx"
 )
 
 //
 
 var once sync.Once
-var database *sql.DB
+var database *sqlx.DB
 var logTofile bool = false
 var errTofile bool = false
 
@@ -24,7 +24,7 @@ func InitDb(driver string, dsn string, maxopenconns, maxidleconns int, logfile b
 		logTofile = logfile
 		errTofile = errfile
 		//fmt.Printf("%p, %T\n", database, database)
-		database, _ = sql.Open(driver, dsn)
+		database, _ = sqlx.Open(driver, dsn)
 
 		//fmt.Printf("%p, %T\n", database, database)
 		if err := database.Ping(); err != nil {

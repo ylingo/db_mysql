@@ -26,19 +26,9 @@ func QueryByPage(dest interface{},
 	_sb.WriteString(fmt.Sprintf("@totalcount,@pagecount"))
 	_sb.WriteString(")")
 	//fmt.Println(_sb.String())
-	// err = database.Select(dest, _sb.String())
-	// if err != nil {
-	// 	return 0, 0, 0, err
-	// }
-
-	rows, err := database.Query(_sb.String())
-	defer rows.Close()
+	err = database.Select(dest, _sb.String())
 	if err != nil {
 		return 0, 0, 0, err
-	} else {
-		if err := rows.Scan(dest); err != nil {
-			return 0, 0, 0, err
-		}
 	}
 
 	row := database.QueryRow("SELECT @totalcount as totalcount,@pagecount as pagecount")

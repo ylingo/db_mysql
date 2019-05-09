@@ -71,26 +71,26 @@ func ExecInsertGetLastId(strStmt string, args ...interface{}) (int64, error) {
 func ExecQuery(dest interface{}, strStmt string, args ...interface{}) error {
 	defer checkerr()
 	//方法一
-	// if err := database.Select(dest, strStmt, args...); err != nil {
-	// 	errorinfo("ExecQuery,sql:%s,param:%s,err:%s", strStmt, argsToString(args...), err)
-	// 	return err
-	// }
-	// loginfo("ExecQuery,sql:%s,param:%s", strStmt, argsToString(args...))
-	// return nil
-
-	//方法二
-	rows, err := database.Query(strStmt, args...)
-	defer rows.Close()
-	if err != nil {
-		errorinfo("ExecQuery,sql:%s,param:%s,err:%s", strStmt, argsToString(args...), err)
-		return err
-	}
-	if err := rows.Scan(dest); err != nil {
+	if err := database.Select(dest, strStmt, args...); err != nil {
 		errorinfo("ExecQuery,sql:%s,param:%s,err:%s", strStmt, argsToString(args...), err)
 		return err
 	}
 	loginfo("ExecQuery,sql:%s,param:%s", strStmt, argsToString(args...))
 	return nil
+
+	//方法二
+	// rows, err := database.Query(strStmt, args...)
+	// defer rows.Close()
+	// if err != nil {
+	// 	errorinfo("ExecQuery,sql:%s,param:%s,err:%s", strStmt, argsToString(args...), err)
+	// 	return err
+	// }
+	// if err := rows.Scan(dest); err != nil {
+	// 	errorinfo("ExecQuery,sql:%s,param:%s,err:%s", strStmt, argsToString(args...), err)
+	// 	return err
+	// }
+	// loginfo("ExecQuery,sql:%s,param:%s", strStmt, argsToString(args...))
+	// return nil
 }
 
 func ExecCheckExists(strStrmt string, args ...interface{}) (bool, error) {

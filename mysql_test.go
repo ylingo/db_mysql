@@ -35,35 +35,48 @@ func _Test_ExecNoQuery(t *testing.T) {
 	}
 }
 
-// func Test_ExecInsertGetLastId(t *testing.T) {
-// 	Init()
+func Test_ExecInsertGetLastId(t *testing.T) {
+	Init()
 
-// 	lastId, err := ExecInsertGetLastId("insert into tbl2(product_id,product_name) values('111','2222')")
-// 	if err != nil {
-// 		t.Error(err)
-// 	} else {
-// 		t.Log("执行成功,ID:", lastId)
-// 	}
-// }
-
-type Product struct {
-	seqId
+	lastId, err := ExecInsertGetLastId("insert into tbl1(c1,c2,c3) values(?,?,?)", "a", "\"b", "\"c")
+	if err != nil {
+		t.Error(err)
+	} else {
+		t.Log("执行成功,ID:", lastId)
+	}
 }
 
-// func Test_ExecQuery(t *testing.T) {
-// 	Init()
+type Product struct {
+	SeqId     int64  `db:"seqid" json:"seqid"`
+	UserId    string `db:"userid" json:"userid"`
+	UserName  string `db:"username" json:"username"`
+	Password  string `db:"password" json:"password"`
+	MobileNum string `db:"mobilenum" json:"mobilenum"`
+	OnOff     bool   `db:"onoff" json:"onoff"`
+}
 
-// 	p := []Product{}
-// 	//p := make([]Product, 0)
-// 	err := ExecQuery(&p, "select id,product_id,product_name from tbl2 limit 1,100")
-// 	if err != nil {
-// 		t.Error(err)
-// 	} else {
-// 		for i := range p {
-// 			t.Log(p[i])
-// 		}
-// 	}
-// }
+func Test_ExecQuery(t *testing.T) {
+	Init()
+	seqId := 10
+	p := []Product{}
+	strSql := `select 
+		t.seqid,
+		coalesce(t.userId,'') as userid,
+		coalesce(t.userName,'') as username,
+		'' as password,
+		coalesce(t.mobileNum,'') as mobilenum,
+		coalesce(t.onoff,false) as onoff
+		from t_admin_user as t
+		where t.seqid=?`
+	err := ExecQuery(&p, strSql, seqId)
+	if err != nil {
+		t.Error(err)
+	} else {
+		for i := range p {
+			t.Log(p[i])
+		}
+	}
+}
 
 func TestQueryByPage(t *testing.T) {
 	Init()
@@ -73,7 +86,7 @@ func TestQueryByPage(t *testing.T) {
 	    coalesce(t.userId,'') as userid,
 		coalesce(t.userName,'') as username,
 		'' as password,
-		coalesce(t.mobileNum,'''') as mobilenum,
+		coalesce(t.mobileNum,'') as mobilenum,
 		coalesce(t.onOff,false) as onoff`
 
 	join := ""
@@ -93,7 +106,7 @@ func TestQueryByPage(t *testing.T) {
 	}
 }
 
-func _TestBatchExecNoQuery(t *testing.T) {
+func TestBatchExecNoQuery(t *testing.T) {
 	Init()
 	var strSqls []string
 	strSqls = append(strSqls, "insert into tbl1(c1,c2,c3) values('a','b','c')")
