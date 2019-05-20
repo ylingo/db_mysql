@@ -5,6 +5,11 @@ import (
 	"fmt"
 )
 
+type TTTT struct {
+	Totalcount int
+	Pagecount  int
+}
+
 func QueryByPage(dest interface{},
 	table, fields, where, join, orderby string,
 	pageSize, pageIndex int) (totalcount, pagecount, outPageIndex int, err error) {
@@ -26,21 +31,27 @@ func QueryByPage(dest interface{},
 	_sb.WriteString(fmt.Sprintf("@totalcount,@pagecount"))
 	_sb.WriteString(")")
 	//fmt.Println(_sb.String())
-	err = database.Select(dest, _sb.String())
+
+	tx, err := database.Beginx()
+	defer tx.Commit()
 	if err != nil {
 		return 0, 0, 0, err
-	}
-
-	row := database.QueryRow("SELECT @totalcount as totalcount,@pagecount as pagecount")
-	if err = row.Scan(&totalcount, &pagecount); err == nil {
-		outPageIndex = pageIndex
-		if pageIndex > pagecount {
-			pageIndex = pagecount
-			return QueryByPage(dest, table, fields, where, join, orderby, pageSize, pageIndex)
-		}
-		return totalcount, pagecount, outPageIndex, nil
 	} else {
-		return 0, 0, 0, err
+		if err := tx.Select(dest, _sb.String()); err != nil {
+			return 0, 0, 0, err
+		} else {
+			row := tx.QueryRow("SELECT @totalcount as totalcount,@pagecount as pagecount")
+			if err := row.Scan(&totalcount, &pagecount); err != nil {
+				return 0, 0, 0, err
+			} else {
+				outPageIndex = pageIndex
+				if pageIndex > pagecount {
+					pageIndex = pagecount
+					return QueryByPage(dest, table, fields, where, join, orderby, pageSize, pageIndex)
+				}
+				return totalcount, pagecount, outPageIndex, nil
+			}
+		}
 	}
 }
 

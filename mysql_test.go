@@ -1,6 +1,7 @@
 package db_mysql
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -35,8 +36,8 @@ func _Test_ExecNoQuery(t *testing.T) {
 	}
 }
 
-func Test_ExecInsertGetLastId(t *testing.T) {
-	Init()
+func _Test_ExecInsertGetLastId(t *testing.T) {
+	//Init()
 
 	lastId, err := ExecInsertGetLastId("insert into tbl1(c1,c2,c3) values(?,?,?)", "a", "\"b", "\"c")
 	if err != nil {
@@ -55,8 +56,8 @@ type Product struct {
 	OnOff     bool   `db:"onoff" json:"onoff"`
 }
 
-func Test_ExecQuery(t *testing.T) {
-	Init()
+func _Test_ExecQuery(t *testing.T) {
+	//Init()
 	seqId := 10
 	p := []Product{}
 	strSql := `select 
@@ -94,7 +95,7 @@ func TestQueryByPage(t *testing.T) {
 	orderby := ""
 	totalcount, totalpage, outpageindex, err := QueryByPage(&dest, tblName, fields, where,
 		join,
-		orderby, 100, 1)
+		orderby, 100, 15)
 	if err != nil {
 		t.Error("totalcount", totalcount, "totalpage:", totalpage, "err:", err)
 	} else {
@@ -106,11 +107,19 @@ func TestQueryByPage(t *testing.T) {
 	}
 }
 
-func TestBatchExecNoQuery(t *testing.T) {
-	Init()
+func __TestBatchExecNoQuery(t *testing.T) {
+	//Init()
 	var strSqls []string
-	strSqls = append(strSqls, "insert into tbl1(c1,c2,c3) values('a','b','c')")
-	strSqls = append(strSqls, "insert into tbl1(c1,c2,c3) values('a1','b1','c1')")
+	for i := 0; i < 1000; i++ {
+		strSql := "insert into t_admin_user(userId,userName,password,idcard,mobilenum,onoff) values("
+		strSql += fmt.Sprintf("'userid%d',", i)
+		strSql += fmt.Sprintf("'username%d',", i)
+		strSql += fmt.Sprintf("'password%d',", i)
+		strSql += fmt.Sprintf("'idcard%d',", i)
+		strSql += fmt.Sprintf("'mobile%d',", i)
+		strSql += "1)"
+		strSqls = append(strSqls, strSql)
+	}
 	if err := ExecBatchNoQuery(strSqls); err != nil {
 		t.Error(err)
 	} else {
